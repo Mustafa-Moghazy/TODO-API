@@ -77,3 +77,10 @@ A Spring Boot-based REST API for managing users and their to-do tasks. The API p
 | DELETE | `/api/todos/{todoId}`        | Delete to-do by ID         |
 
 ## ^-^ ##
+
+## v2
+
+### **New Features:**
+  - The system now supports user roles (`ADMIN`, `USER`).
+  - Roles are initialized in the database using `DatabaseSeeder`.
+
