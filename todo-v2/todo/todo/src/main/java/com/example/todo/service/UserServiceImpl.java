@@ -13,6 +13,12 @@ import com.example.todo.repository.RoleRepository;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
   @Autowired
   private UserRepository userRepo;
   @Autowired
@@ -30,6 +36,8 @@ public class UserServiceImpl implements UserService{
   private TodoMapper todoMapper;
   @Autowired
   RoleRepository roleRepo;
+  @Autowired
+  PasswordEncoder passwordEncoder;
   @Override
   public User createUser(UserRequestDTO userRequestDTO) {
     Optional<User> user = userRepo.findByUserName(userRequestDTO.getUserName());
@@ -37,14 +45,14 @@ public class UserServiceImpl implements UserService{
       throw new UserNameIsAlreadyExistException("UserName Is Already Exist, Try Anther One");
     }
     Set<Role> roles = userRequestDTO.getRoles().stream()
-      .map( roleName -> roleRepo.findByName(roleName)
-        .orElseThrow( ()-> new RuntimeException("Role Not Found : " + roleName)))
-      .collect(Collectors.toSet());
+            .map( roleName -> roleRepo.findByName(roleName)
+                    .orElseThrow( ()-> new RuntimeException("Role Not Found : " + roleName)))
+            .collect(Collectors.toSet());
 
     User newUser = new User();
     newUser.setUserName(userRequestDTO.getUserName());
     newUser.setEmail(userRequestDTO.getEmail());
-    newUser.setPassword(userRequestDTO.getPassword());
+    newUser.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
     newUser.setRoles(roles);
 
     return userRepo.save(newUser);
@@ -53,7 +61,7 @@ public class UserServiceImpl implements UserService{
   @Override
   public User findUserByID(Long id) {
     return userRepo.findById(id)
-      .orElseThrow( () -> new RecordNotFoundException("User With Id : " + id + " Not Found"));
+            .orElseThrow( () -> new RecordNotFoundException("User With Id : " + id + " Not Found"));
   }
 
   @Override
@@ -75,9 +83,9 @@ public class UserServiceImpl implements UserService{
     currentUser.setPassword(updatedUser.getPassword());
     // Check if the Role is found //
     Set<Role> roles = updatedUser.getRoles().stream()
-      .map(roleName -> roleRepo.findByName(roleName)
-        .orElseThrow(()-> new RuntimeException("Role Not Found")))
-      .collect(Collectors.toSet());
+            .map(roleName -> roleRepo.findByName(roleName)
+                    .orElseThrow(()-> new RuntimeException("Role Not Found")))
+            .collect(Collectors.toSet());
     currentUser.setRoles(roles);
     return userRepo.save(currentUser);
   }
@@ -91,7 +99,15 @@ public class UserServiceImpl implements UserService{
   @Override
   public User findByUserName(String userName) {
     return userRepo.findByUserName(userName.trim())
-      .orElseThrow(()-> new RecordNotFoundException("User With Name: "+ userName + " Not Found!"));
+            .orElseThrow(()-> new RecordNotFoundException("User With Name: "+ userName + " Not Found!"));
   }
 
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user = userRepo.findByUserName(username).orElseThrow(()-> new RecordNotFoundException("User Not Found!!"));
+
+    List<SimpleGrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
+
+    return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), authorities );
+  }
 }
