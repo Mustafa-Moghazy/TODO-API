@@ -2,22 +2,14 @@
 
 A Spring Boot-based REST API for managing users and their to-do tasks. The API provides endpoints to create, update, retrieve, and delete users and their respective to-do tasks.
 
-## Features
+## Version two Features 
 
-- **Users**
-  - Get all users
-  - Get a user by ID
-  - Create a new user
-  - Update an existing user
-  - Delete a user
-
-- **To-Dos**
-  - Get all to-dos
-  - Get a to-do by ID
-  - Get all to-dos for a specific user
-  - Create a new to-do
-  - Update an existing to-do
-  - Delete a to-do
+- User authentication with **Basic Auth**
+- Role-based access (`ROLE_USER`, `ROLE_ADMIN`)
+- Secure endpoints using `SecurityFilterChain`
+- BCrypt password encoding
+- Preloaded default admin user (`admin:admin123`)
+- CSRF disabled for testing (with POST support)
 
 ## Tech Stack
 
@@ -53,6 +45,17 @@ A Spring Boot-based REST API for managing users and their to-do tasks. The API p
      java -jar target/todo-api-0.0.1-SNAPSHOT.jar
    ```
 
+## 🧪 Default Admin User
+
+When the app starts, it creates a default admin user:
+
+- **Username**: `admin`  
+- **Password**: `admin123`  
+- **Role**: `ROLE_ADMIN`
+
+Use this account to test secure endpoints that require admin access.
+
+
 ## API Endpoints
 
 ### Users
@@ -76,4 +79,5 @@ A Spring Boot-based REST API for managing users and their to-do tasks. The API p
 | PUT    | `/api/todos/{todoId}`        | Update to-do by ID         |
 | DELETE | `/api/todos/{todoId}`        | Delete to-do by ID         |
 
-## ^-^ ##
+
+
