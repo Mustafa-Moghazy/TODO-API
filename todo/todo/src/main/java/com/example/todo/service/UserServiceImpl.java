@@ -2,9 +2,11 @@ package com.example.todo.service;
 
 import com.example.todo.dto.TodoResponseDTO;
 import com.example.todo.dto.UserRequestDTO;
+import com.example.todo.dto.UserResponseDTO;
 import com.example.todo.entity.Role;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
+import com.example.todo.exception.NotValidRoleException;
 import com.example.todo.exception.RecordNotFoundException;
 import com.example.todo.exception.UserNameIsAlreadyExistException;
 import com.example.todo.mapper.TodoMapper;
@@ -20,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,15 +39,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   RoleRepository roleRepo;
   @Autowired
   PasswordEncoder passwordEncoder;
-  @Override
-  public User createUser(UserRequestDTO userRequestDTO) {
+    @Autowired
+    private UserMapper userMapper;
+
+    @Override
+  public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
     Optional<User> user = userRepo.findByUserName(userRequestDTO.getUserName());
     if(user.isPresent()){
       throw new UserNameIsAlreadyExistException("UserName Is Already Exist, Try Anther One");
     }
     Set<Role> roles = userRequestDTO.getRoles().stream()
             .map( roleName -> roleRepo.findByName(roleName)
-                    .orElseThrow( ()-> new RuntimeException("Role Not Found : " + roleName)))
+                    .orElseThrow( ()-> new NotValidRoleException("Role Not Found : " + roleName)))
             .collect(Collectors.toSet());
 
     User newUser = new User();
@@ -55,7 +59,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     newUser.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
     newUser.setRoles(roles);
 
-    return userRepo.save(newUser);
+    User saved = userRepo.save(newUser);
+    return  userMapper.toUserResponseDto(saved);
   }
 
   @Override
@@ -65,8 +70,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public List<User> getAllUsers() {
-    return userRepo.findAll();
+  public List<UserResponseDTO> getAllUsers() {
+      List<UserResponseDTO> response = userRepo.findAll().stream().map( user -> userMapper.toUserResponseDto(user)).toList();
+    return response;
   }
 
   @Override
@@ -76,18 +82,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public User updateUser(Long userId, UserRequestDTO updatedUser) {
+  public UserResponseDTO updateUser(Long userId, UserRequestDTO updatedUser) {
     User currentUser = findUserByID(userId);
     currentUser.setUserName(updatedUser.getUserName());
     currentUser.setEmail(updatedUser.getEmail());
-    currentUser.setPassword(updatedUser.getPassword());
+    currentUser.setPassword( passwordEncoder.encode( updatedUser.getPassword() ) );
     // Check if the Role is found //
     Set<Role> roles = updatedUser.getRoles().stream()
             .map(roleName -> roleRepo.findByName(roleName)
                     .orElseThrow(()-> new RuntimeException("Role Not Found")))
             .collect(Collectors.toSet());
     currentUser.setRoles(roles);
-    return userRepo.save(currentUser);
+
+    User saved = userRepo.save(currentUser);
+    return userMapper.toUserResponseDto(saved);
   }
 
   @Override

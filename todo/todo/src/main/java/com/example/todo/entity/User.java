@@ -30,7 +30,7 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonIgnoreProperties("user")
-  private List<ToDo> toDos;
+  private List<ToDo> todos;
 
 
   public Long getId() {
@@ -73,11 +73,11 @@ public class User {
     this.roles = roles;
   }
 
-  public List<ToDo> getToDos() {
-    return toDos;
+  public List<ToDo> getTodos() {
+    return todos;
   }
 
-  public void setToDos(List<ToDo> toDos) {
-    this.toDos = toDos;
+  public void setTodos(List<ToDo> toDos) {
+    this.todos = toDos;
   }
 }
