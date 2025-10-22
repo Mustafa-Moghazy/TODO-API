@@ -28,6 +28,8 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public TodoResponseDTO createToDo(TodoRequestDTO todoRequestDTO) {
         ToDo newTodo = todoMapper.toEntity(todoRequestDTO);
+        User user = userService.findUserByID(todoRequestDTO.getUserId());
+        newTodo.setUser(user);
         return todoMapper.toTodoDTO(todoRepo.save(newTodo));
     }
 

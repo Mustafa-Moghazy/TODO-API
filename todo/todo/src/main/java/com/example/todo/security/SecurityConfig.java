@@ -16,14 +16,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain (HttpSecurity httpSecurity) throws Exception{
+    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .authorizeHttpRequests( auth -> auth
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("api/admin/users/**").hasRole("ADMIN")
                         .requestMatchers("api/todos/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())
-                .csrf( csrf -> csrf.disable() );
+                .csrf(csrf -> csrf.disable());
 
         return httpSecurity.build();
     }

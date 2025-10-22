@@ -12,7 +12,7 @@ public interface TodoMapper {
     @Mapping(source = "user.id", target = "userId")
     TodoResponseDTO toTodoDTO(ToDo toDo);
 
-    @Mapping(source = "userId", target = "user.id")
+    @Mapping(target = "user", ignore = true)
     ToDo toEntity(TodoRequestDTO toDo);
 
 }
