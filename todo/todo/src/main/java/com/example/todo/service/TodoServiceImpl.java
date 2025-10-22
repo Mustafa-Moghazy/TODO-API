@@ -18,52 +18,51 @@ import java.util.stream.Collectors;
 
 @Service
 public class TodoServiceImpl implements TodoService {
-  @Autowired
-  private TodoRepository todoRepo;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private TodoMapper todoMapper;
+    @Autowired
+    private TodoRepository todoRepo;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private TodoMapper todoMapper;
 
-  @Override
-  public ToDo createToDo(TodoRequestDTO todoRequestDTO) {
-    userService.findUserByID(todoRequestDTO.getUserId());
-    ToDo newTodo = todoMapper.toEntity(todoRequestDTO);
-    return todoRepo.save(newTodo);
-  }
+    @Override
+    public TodoResponseDTO createToDo(TodoRequestDTO todoRequestDTO) {
+        ToDo newTodo = todoMapper.toEntity(todoRequestDTO);
+        return todoMapper.toTodoDTO(todoRepo.save(newTodo));
+    }
 
-  @Override
-  public List<TodoResponseDTO> getAllTodos() {
-    return todoRepo.findAll().stream()
-      .map(toDo -> todoMapper.toTodoDTO(toDo))
-      .collect(Collectors.toList());
-  }
+    @Override
+    public List<TodoResponseDTO> getAllTodos() {
+        return todoRepo.findAll().stream()
+                .map(toDo -> todoMapper.toTodoDTO(toDo))
+                .collect(Collectors.toList());
+    }
 
-  @Override
-  public List<TodoResponseDTO> getTodosByUserId(Long userId) {
-    userService.findUserByID(userId);
-    return todoRepo.findByUserId(userId).stream()
-      .map(toDo -> todoMapper.toTodoDTO(toDo))
-      .collect(Collectors.toList());
-  }
+    @Override
+    public List<TodoResponseDTO> getTodosByUserId(Long userId) {
+        userService.findUserByID(userId);
+        return todoRepo.findByUserId(userId).stream()
+                .map(toDo -> todoMapper.toTodoDTO(toDo))
+                .collect(Collectors.toList());
+    }
 
-  @Override
-  public ToDo getTodoByID(Long id) {
-    return todoRepo.findById(id)
-      .orElseThrow(()-> new RecordNotFoundException("Could not find Todo with Id : " + id));
-  }
+    @Override
+    public ToDo getTodoByID(Long id) {
+        return todoRepo.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Could not find Todo with Id : " + id));
+    }
 
-  @Override
-  public ToDo updateTodo(Long id, TodoRequestDTO newToDo) {
-    ToDo todo = getTodoByID(id);
-    todo.setTodoName(newToDo.getTodoName());
-    todo.setCompleted(newToDo.isCompleted());
-    return todoRepo.save(todo);
-  }
+    @Override
+    public ToDo updateTodo(Long id, TodoRequestDTO newToDo) {
+        ToDo todo = getTodoByID(id);
+        todo.setTodoName(newToDo.getTodoName());
+        todo.setCompleted(newToDo.isCompleted());
+        return todoRepo.save(todo);
+    }
 
-  @Override
-  public void deleteTodo(Long id) {
-    ToDo todo = getTodoByID(id);
-    todoRepo.delete(todo);
-  }
+    @Override
+    public void deleteTodo(Long id) {
+        ToDo todo = getTodoByID(id);
+        todoRepo.delete(todo);
+    }
 }

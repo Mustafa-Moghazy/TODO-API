@@ -13,71 +13,74 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String userName;
-  private String email;
-  private String password;
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
-    name = "user_roles", // bridge table for many to many relationship //
-    joinColumns = @JoinColumn(name = "user_id"), // fk from user table //
-    inverseJoinColumns = @JoinColumn(name = "role_id") // fk from role //
-  )
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private Set<Role> roles = new HashSet<>();
+    private String userName;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  @JsonIgnoreProperties("user")
-  private List<ToDo> todos;
+    private String email;
+
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles", // bridge table for many to many relationship //
+            joinColumns = @JoinColumn(name = "user_id"), // fk from user table //
+            inverseJoinColumns = @JoinColumn(name = "role_id") // fk from role //
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("user")
+    private List<ToDo> todos;
 
 
-  public Long getId() {
-    return id;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public String getUserName() {
-    return userName;
-  }
+    public String getUserName() {
+        return userName;
+    }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public Set<Role> getRoles() {
-    return roles;
-  }
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
-  public void setRoles(Set<Role> roles) {
-    this.roles = roles;
-  }
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
-  public List<ToDo> getTodos() {
-    return todos;
-  }
+    public List<ToDo> getTodos() {
+        return todos;
+    }
 
-  public void setTodos(List<ToDo> toDos) {
-    this.todos = toDos;
-  }
+    public void setTodos(List<ToDo> toDos) {
+        this.todos = toDos;
+    }
 }

@@ -5,44 +5,47 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "todos")
 public class ToDo {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String todoName;
-  private boolean completed;
-  @ManyToOne
-  @JoinColumn(name = "user_id")
-  private User user;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  public Long getId() {
-    return id;
-  }
+    private String todoName;
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    private boolean completed;
 
-  public String getTodoName() {
-    return todoName;
-  }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-  public void setTodoName(String todoName) {
-    this.todoName = todoName;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public boolean isCompleted() {
-    return completed;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public void setCompleted(boolean completed) {
-    this.completed = completed;
-  }
+    public String getTodoName() {
+        return todoName;
+    }
 
-  public User getUser() {
-    return user;
-  }
+    public void setTodoName(String todoName) {
+        this.todoName = todoName;
+    }
 
-  public void setUser(User user) {
-    this.user = user;
-  }
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
