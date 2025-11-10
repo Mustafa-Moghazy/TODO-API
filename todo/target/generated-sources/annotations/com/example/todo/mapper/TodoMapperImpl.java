@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-20T17:32:26+0300",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 25 (Oracle Corporation)"
+    date = "2025-11-10T16:22:52+0200",
+    comments = "version: 1.6.3, compiler: javac, environment: Java 25 (Oracle Corporation)"
 )
 @Component
 public class TodoMapperImpl implements TodoMapper {
@@ -39,7 +39,6 @@ public class TodoMapperImpl implements TodoMapper {
 
         ToDo toDo1 = new ToDo();
 
-        toDo1.setUser( todoRequestDTOToUser( toDo ) );
         toDo1.setTodoName( toDo.getTodoName() );
         toDo1.setCompleted( toDo.isCompleted() );
 
@@ -47,29 +46,10 @@ public class TodoMapperImpl implements TodoMapper {
     }
 
     private Long toDoUserId(ToDo toDo) {
-        if ( toDo == null ) {
-            return null;
-        }
         User user = toDo.getUser();
         if ( user == null ) {
             return null;
         }
-        Long id = user.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
-    }
-
-    protected User todoRequestDTOToUser(TodoRequestDTO todoRequestDTO) {
-        if ( todoRequestDTO == null ) {
-            return null;
-        }
-
-        User user = new User();
-
-        user.setId( todoRequestDTO.getUserId() );
-
-        return user;
+        return user.getId();
     }
 }
