@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class JwtRequestDTO {
+public class AuthRequestDTO {
     @NotBlank(message = "User Name Is Required")
     private String userName;
     @NotBlank(message = "Password Is Required")

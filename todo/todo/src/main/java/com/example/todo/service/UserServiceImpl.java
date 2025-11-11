@@ -15,7 +15,7 @@ import com.example.todo.repository.RoleRepository;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -105,9 +105,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public User findByUserName(String userName) {
-    return userRepo.findByUserName(userName.trim())
-            .orElseThrow(()-> new RecordNotFoundException("User With Name: "+ userName + " Not Found!"));
+  public UserResponseDTO findByUserName(String userName) {
+        User user = userRepo.findByUserName(userName.trim())
+                .orElseThrow(()-> new RecordNotFoundException("User With Name: "+ userName + " Not Found!"));
+    return userMapper.toUserResponseDto(user);
   }
 
   @Override
